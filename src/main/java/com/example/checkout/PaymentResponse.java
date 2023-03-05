@@ -3,7 +3,7 @@ package com.example.checkout;
 public class PaymentResponse {
     private String code;
     private String message;
-    private String data;
+    private String url;
 
     public PaymentResponse() {
     }
@@ -24,11 +24,11 @@ public class PaymentResponse {
         this.message = message;
     }
 
-    public String getData() {
-        return data;
+    public String getUrl() {
+        return url;
     }
 
-    public void setData(String data) {
-        this.data = data;
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

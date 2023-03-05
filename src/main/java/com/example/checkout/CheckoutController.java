@@ -3,8 +3,8 @@ package com.example.checkout;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -24,13 +24,12 @@ public class CheckoutController {
 
 
     @PostMapping("/create-payment")
-    public ResponseEntity<?>createPayment(HttpServletRequest req) throws IOException {
+    public ResponseEntity<?>createPayment(HttpServletRequest req, @RequestBody Map<String,String> param) throws IOException {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
-     String orderType = "payment";
-        long amount = 10000 * 100;
+        String totalPrice= param.get("totalPrice");
+        long amount = Integer.parseInt(totalPrice)*100;
         String bankCode = "VNBANK";
-
         String vnp_TxnRef = Config.getRandomNumber(8);
         String vnp_IpAddr = Config.getIpAddress(req);
         String vnp_TmnCode = Config.vnp_TmnCode;
@@ -47,7 +46,7 @@ public class CheckoutController {
         }
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
-        vnp_Params.put("vnp_OrderType", orderType);
+        //vnp_Params.put("vnp_OrderType", orderType);
 
         String locate = "vn";
         if (locate != null && !locate.isEmpty()) {
@@ -79,7 +78,7 @@ public class CheckoutController {
                 //Build hash data
                 hashData.append(fieldName);
                 hashData.append('=');
-                hashData.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
+                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
                 //Build query
                 query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
                 query.append('=');
@@ -98,7 +97,7 @@ public class CheckoutController {
         PaymentResponse result=new PaymentResponse();
         result.setCode("00");
         result.setMessage("Success");
-        result.setData(paymentUrl);
+        result.setUrl(paymentUrl);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
